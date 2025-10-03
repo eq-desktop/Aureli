@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+export XDG_CURRENT_DESKTOP="Aureli"
+export HYPRLAND_INSTANCE_SIGNATURE=""
+systemctl --user import-environment XDG_CURRENT_DESKTOP
+Hyprland
