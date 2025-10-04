@@ -69,7 +69,7 @@ def reset_config():
 
 
 def eqsh(cmd: str):
-    return ("qs -p /usr/share/aureli/eqsh" + " " + cmd)
+    return ("qs -p /usr/share/aureli" + " " + cmd)
 
 def eqsh_run(cmd: str):
     run_detached(eqsh(cmd))
