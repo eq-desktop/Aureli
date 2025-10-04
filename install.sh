@@ -3,7 +3,7 @@ set -e
 
 echo "Installing Aureli..."
 
-sudo mkdir -p ~/.config/aureli
+mkdir -p ~/.config/aureli
 sudo cp bin/aureli /usr/bin
 sudo cp bin/equora /usr/bin
 sudo cp share/wayland-sessions/aureli.desktop /usr/share/wayland-sessions
