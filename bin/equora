@@ -68,14 +68,14 @@ def reset_config():
     save_config({})
 
 
-def eqsh(cmd: str):
-    return ("qs -p /usr/share/aureli" + " " + cmd)
+def eqsh(cmd: str, location: str="/usr/share/aureli"):
+    return ("qs -p " + location + " " + cmd)
 
 def eqsh_run(cmd: str):
     run_detached(eqsh(cmd))
 
-def eqsh_run_dev(cmd: str):
-    run(eqsh(cmd))
+def eqsh_run_dev(cmd: str, location: str="/usr/share/aureli"):
+    run(eqsh(cmd, location))
 
 def ipc(*cmd: str):
     if not is_equora_running(): exit_because("Equora is not running")
@@ -177,6 +177,7 @@ def main():
 
     run_cmd = sub.add_parser("run", help="Run Equora")
     run_cmd.add_argument("--dev", action="store_true", help="Run Equora in development mode")
+    run_cmd.add_argument("-l", "--location", default="/usr/share/aureli", help="Location of Equora")
 
     sub.add_parser("lock", help="Lock the screen")
     sub.add_parser("update", help="Look for updates")
@@ -221,9 +222,9 @@ def main():
     if args.command == "run":
         if is_equora_running(): exit_because("Equora is already running", 0)
         if args.dev:
-            eqsh_run_dev("")
+            eqsh_run_dev("", location=args.location)
         else:
-            eqsh_run("")
+            eqsh_run("", location=args.location)
     elif args.command == "lock":
         ipc("eqlock", "lock")
     elif args.command == "settings":

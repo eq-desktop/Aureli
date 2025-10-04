@@ -30,6 +30,7 @@ Item {
         watchChanges: true
         onFileChanged: reload()
 		onAdapterUpdated: writeAdapter()
+		Component.onCompleted: writeAdapter()
 		JsonAdapter {
 			id: adapter
 			property Notch          notch: Notch {}
