@@ -6,5 +6,6 @@ echo "Uninstalling Aureli..."
 sudo rm /usr/bin/aureli
 sudo rm /usr/bin/equora
 sudo rm /usr/share/wayland-sessions/aureli.desktop
+sudo rm -rf /usr/share/aureli
 
 echo "Uninstallation complete."

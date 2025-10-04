@@ -3,10 +3,10 @@ set -e
 
 echo "Installing Aureli..."
 
-sudo cp aureli /usr/bin
-sudo cp equora /usr/bin
-sudo cp aureli.desktop /usr/share/wayland-sessions
-
-equora install
+sudo mkdir -p ~/.config/aureli
+sudo cp bin/aureli /usr/bin
+sudo cp bin/equora /usr/bin
+sudo cp share/wayland-sessions/aureli.desktop /usr/share/wayland-sessions
+sudo cp -r share/aureli/ /usr/share
 
 echo "Installation complete."

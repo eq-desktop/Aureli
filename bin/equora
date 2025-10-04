@@ -7,7 +7,7 @@ import shlex
 import json
 import shutil
 
-CONFIG_PATH = os.path.expanduser("~/.local/share/equora/eqsh/runtime/config.json")
+CONFIG_PATH = os.path.expanduser("~/.config/aureli/config.json")
 
 def load_config():
     with open(CONFIG_PATH, "r") as f:
@@ -69,7 +69,7 @@ def reset_config():
 
 
 def eqsh(cmd: str):
-    return ("qs -p ~/.local/share/equora/eqsh" + " " + cmd)
+    return ("qs -p /usr/share/aureli/eqsh" + " " + cmd)
 
 def eqsh_run(cmd: str):
     run_detached(eqsh(cmd))
@@ -96,32 +96,21 @@ def warn(msg: str):
 def err(msg: str):
     print("\033[91m\033[38;5;196mERROR: \033[0m" + msg)
 
-def install_equora():
-    ok("Installing Equora...")
-    try:
-        # check if ~/eqSh or ~/.config/quickshell/eqsh exists
-        if os.path.exists(os.path.expanduser("~/.local/share/equora")):
-            warn("Equora is already installed")
-            if input("Do you want to overwrite it? (y/n) ").lower() == "y":
-                shutil.rmtree(os.path.expanduser("~/.local/share/equora"))
-            else:
-                exit_because("Installation aborted")
-        # install equora
-        os.mkdir(os.path.expanduser("~/eqSh"))
-        # git clone
-        os.system("git clone https://github.com/eq-desktop/eqSh ~/eqSh")
-        os.system("git submodule update --init --recursive")
-        # mv ~/eqSh to ~/.local/share/equora
-        if input("Do you want to also install wallpapers? (y/n) ").lower() == "y":
-            os.system("git clone https://github.com/eq-desktop/wallpapers ~/eqSh/wallpapers")
-            print("Wallpapers installed")
-        shutil.move(os.path.expanduser("~/eqSh"), os.path.expanduser("~/.local/share/equora/"))
-        ok("Equora installed")
-        print("Post-installation steps:")
-        print("- Install Quickshell https://quickshell.org")
-        print("- Run `equora run` to start Equora")
-    except Exception as e:
-        err(f"Failed to install Equora: {e}")
+def ask(msg: str):
+    while True:
+        res = input("\033[93m" + msg + " (Y/n): \033[0m")
+        if res == "": return "y"
+        if res.lower() in ("y", "yes"): return "y"
+        if res.lower() in ("n", "no"): return "n"
+        print("Invalid answer")
+
+def update_equora():
+    ok("Updating Equora...")
+    os.mkdir(".temp-aureli")
+    os.system("git clone https://github.com/eq-desktop/aureli.git .temp-aureli")
+    os.system(".temp-aureli/update.sh")
+    shutil.rmtree(".temp-aureli")
+    ok("Equora updated")
 
 def process_name_from_pid(pid: int) -> str | None:
     try:
@@ -136,9 +125,9 @@ def is_equora_running() -> bool:
     # get json of .local/share/equora/eqsh/runtime/runtime
     contents = {}
     # if file doesnt exist
-    if not os.path.exists(os.path.expanduser("~/.local/share/equora/eqsh/runtime/runtime")):
+    if not os.path.exists(os.path.expanduser("~/.config/aureli/runtime")):
         return False
-    with open(os.path.expanduser("~/.local/share/equora/eqsh/runtime/runtime"), "r") as f:
+    with open(os.path.expanduser("~/.config/aureli/runtime"), "r") as f:
         contents = json.load(f)
 
     proc_id = contents["processId"]
@@ -149,9 +138,9 @@ def kill_equora():
     # get json of .local/share/equora/eqsh/runtime/runtime
     contents = {}
     # if file doesnt exist
-    if not os.path.exists(os.path.expanduser("~/.local/share/equora/eqsh/runtime/runtime")):
+    if not os.path.exists(os.path.expanduser("~/.config/aureli/runtime")):
         exit_because("Equora is not running")
-    with open(os.path.expanduser("~/.local/share/equora/eqsh/runtime/runtime"), "r") as f:
+    with open(os.path.expanduser("~/.config/aureli/runtime"), "r") as f:
         contents = json.load(f)
 
     proc_id = contents["processId"]
@@ -191,7 +180,6 @@ def main():
 
     sub.add_parser("lock", help="Lock the screen")
     sub.add_parser("update", help="Look for updates")
-    sub.add_parser("install", help="Install Equora")
     sub.add_parser("settings", help="Open settings")
     sub.add_parser("launchpad", help="Open launchpad")
     notch = sub.add_parser("new_notch_app", help="Create a new notch app")
@@ -238,12 +226,10 @@ def main():
             eqsh_run("")
     elif args.command == "lock":
         ipc("eqlock", "lock")
-    elif args.command == "install":
-        install_equora()
     elif args.command == "settings":
         ipc("settings", "toggle")
     elif args.command == "update":
-        run("git pull ", cwd=os.path.expanduser("~/.local/share/equora"))
+        update_equora()
     elif args.command == "launchpad":
         ipc("launchpad", "toggle")
     elif args.command == "ipc":
