@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-export HYPRLAND_INSTANCE_SIGNATURE=""
-Hyprland --config /usr/share/aureli/hyprland-config/hyprland.conf

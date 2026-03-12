@@ -1,0 +1,12 @@
+[Unit]
+Description=ydotool daemon
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ydotoold
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
